@@ -37,7 +37,7 @@ public class Solver
 			goal = lines.get(0);
 			solve(b, goal);
 		}
-		catch (IOException e)
+		catch (Exception e)
 		{
 			System.out.println("Invalid init and/or goal file.");
 		}

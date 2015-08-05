@@ -1,12 +1,15 @@
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 
+import com.sun.media.sound.InvalidFormatException;
+
 public class Board
 {
 	/**
-	 * 2D configuration of board Each position is index of block occupying it in
-	 * blocks -1 represents empty space
+	 * 2D configuration of board Each position is index + 1 of block occupying it in
+	 * blocks 0 represents empty space
 	 */
 	private int[][]					board;
 	/**
@@ -47,7 +50,10 @@ public class Board
 	 */
 	public Board(String s)
 	{
-
+		board = new int[Integer.valueOf(s.substring(0, s.indexOf(" ")))][Integer.valueOf(s.substring(s.indexOf(" ") + 1))];
+		blocks = new ArrayList<String>();
+		hashCode = 1;
+		openSpaces = new LinkedList<Coordinates>();
 	}
 
 	/**
@@ -55,10 +61,28 @@ public class Board
 	 * 
 	 * @param b
 	 *            Block to add
+	 * @throws Exception 
 	 */
-	public void addBlock(String b)
+	public void addBlock(String b) throws Exception
 	{
-
+		int index = blocks.size();
+		blocks.add(b);
+		int firstSpace = b.indexOf(" ");
+		int secondSpace = b.indexOf(" ", firstSpace + 1);
+		int thirdSpace = b.indexOf(" ", secondSpace + 1);
+		int x1 = Integer.valueOf(b.substring(0, firstSpace));
+		int y1 = Integer.valueOf(b.substring(firstSpace + 1, secondSpace));
+		int x2 = Integer.valueOf(b.substring(secondSpace + 1, thirdSpace));
+		int y2 = Integer.valueOf(b.substring(thirdSpace + 1));
+		if (x2 >= board.length || y2 >= board.length || x1 > x2 || y1 > y2)
+			throw new Exception();
+		for (int i = x1; i < x2; i++)
+			for (int j = y1; j < y2; j++)
+			{
+				if (board[i][j] != 0)
+					throw new Exception();
+				board[i][j] = index + 1;
+			}
 	}
 
 	/**
