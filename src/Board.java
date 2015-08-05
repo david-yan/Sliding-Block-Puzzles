@@ -16,7 +16,7 @@ public class Board
 	/**
 	 * List of all blocks
 	 */
-	private ArrayList<Block>		blocks;
+	private ArrayList<String>		blocks;
 	/**
 	 * Used to optimize equals method updated slightly with each call to move
 	 */
@@ -56,7 +56,7 @@ public class Board
 	 * @param b
 	 *            Block to add
 	 */
-	public void addBlock(Block b)
+	public void addBlock(String b)
 	{
 
 	}

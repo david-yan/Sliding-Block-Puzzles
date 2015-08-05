@@ -26,8 +26,7 @@ public class Solver
 			b = new Board(lines.get(0));
 			for (int i = 1; i < lines.size(); i++)
 			{
-				Block block = new Block(lines.get(i));
-				b.addBlock(block);
+				b.addBlock(lines.get(i));
 			}
 			lines = Files.readAllLines(Paths.get(args[1]), ENCODING);
 			if (lines.size() != 1)
