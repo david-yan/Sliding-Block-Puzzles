@@ -28,6 +28,7 @@ public class Solver
 			{
 				b.addBlock(lines.get(i));
 			}
+			b.finishAddingBlocks();
 			lines = Files.readAllLines(Paths.get(args[1]), ENCODING);
 			if (lines.size() != 1)
 			{
