@@ -311,4 +311,9 @@ public class Board
 			toReturn += b.toString() + "\n";
 		return toReturn;
 	}
+	
+	public boolean checkGoal(String goal)
+	{
+		return blocks.contains(new Block(goal));
+	}
 }
