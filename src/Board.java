@@ -1,5 +1,6 @@
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
@@ -16,7 +17,7 @@ public class Board
 	/**
 	 * Stored to optimize runtime of possibleMoves
 	 */
-	private LinkedList<Coordinates>	openSpaces;
+	private HashSet<Coordinates>	openSpaces;
 	/**
 	 * List of all blocks
 	 */
@@ -41,6 +42,18 @@ public class Board
 			this.x = x;
 			this.y = y;
 		}
+		public int hashCode()
+		{
+			return x * 7 + y * 13;
+		}
+		public boolean equals(Object o)
+		{
+			return this.hashCode() == o.hashCode();
+		}
+		public String toString()
+		{
+			return "(" + x + ", " + y + ")";
+		}
 	}
 
 	/**
@@ -59,7 +72,15 @@ public class Board
 		board = new int[x][y];
 		blocks = new ArrayList<Block>();
 		hashCode = 1;
-		openSpaces = new LinkedList<Coordinates>();
+		openSpaces = new HashSet<Coordinates>();
+	}
+	
+	public Board(int[][] board, ArrayList<Block> blocks, int hashCode, HashSet<Coordinates> openSpaces)
+	{
+		this.board = board;
+		this.blocks = blocks;
+		this.hashCode = hashCode;
+		this.openSpaces = openSpaces;
 	}
 
 	/**
@@ -76,13 +97,13 @@ public class Board
 		blocks.add(block);
 		if (block.x2 >= board.length || block.y2 >= board.length || block.x1 > block.x2 || block.y1 > block.y2)
 			throw new Exception();
-		for (int i = block.x1; i < block.x2; i++)
-			for (int j = block.y1; j < block.y2; j++)
+		for (int i = block.x1; i <= block.x2; i++)
+			for (int j = block.y1; j <= block.y2; j++)
 			{
 				if (board[i][j] != 0)
 					throw new Exception();
 				board[i][j] = index + 1;
-				hashCode += i * 7 + j * 13 + block.hashCode();
+				hashCode += (i + 1) * 7 + (j + 1) * 13 + block.hashCode();
 			}
 	}
 
@@ -93,7 +114,6 @@ public class Board
 				if (board[i][j] == 0)
 				{
 					openSpaces.add(new Coordinates(i, j));
-					hashCode -= i * 7 + j * 13;
 				}
 	}
 
@@ -102,7 +122,7 @@ public class Board
 	 * 
 	 * @return move configurations
 	 */
-	public List<String> possibleMoves()
+	public LinkedList<String> possibleMoves()
 	{
 		HashSet<Block> adjacent = new HashSet<Block>();
 		for (Coordinates c : openSpaces)
@@ -110,11 +130,11 @@ public class Board
 			if (c.x + 1 < board.length && board[c.x + 1][c.y] != 0)
 				adjacent.add(blocks.get(board[c.x + 1][c.y] - 1));
 			if (c.x - 1 >= 0 && board[c.x - 1][c.y] != 0)
-				adjacent.add(blocks.get(board[c.x - 1][c.y]));
+				adjacent.add(blocks.get(board[c.x - 1][c.y] - 1));
 			if (c.y + 1 < board[0].length && board[c.x][c.y + 1] != 0)
-				adjacent.add(blocks.get(board[c.x][c.y + 1]));
+				adjacent.add(blocks.get(board[c.x][c.y + 1] - 1));
 			if (c.y - 1 >= 0 && board[c.x][c.y - 1] != 0)
-				adjacent.add(blocks.get(board[c.x][c.y - 1]));
+				adjacent.add(blocks.get(board[c.x][c.y - 1] - 1));
 		}
 		LinkedList<String> moves = new LinkedList<String>();
 		for (Block b : adjacent)
@@ -129,7 +149,7 @@ public class Board
 	 *            Block to find possible moves of
 	 * @return list of possible moves
 	 */
-	public List<String> possibleMoves(Block block)
+	public LinkedList<String> possibleMoves(Block block)
 	{
 		LinkedList<String> moves = new LinkedList<String>();
 		if (block.x1 - 1 >= 0)
@@ -210,7 +230,75 @@ public class Board
 	 */
 	public Board move(String move)
 	{
-		return null;
+		int firstSpace = move.indexOf(" ");
+		int secondSpace = move.indexOf(" ", firstSpace + 1);
+		int thirdSpace = move.indexOf(" ", secondSpace + 1);
+		int x1 = Integer.valueOf(move.substring(0, firstSpace));
+		int y1 = Integer.valueOf(move.substring(firstSpace + 1, secondSpace));
+		int x2 = Integer.valueOf(move.substring(secondSpace + 1, thirdSpace));
+		int y2 = Integer.valueOf(move.substring(thirdSpace + 1));
+		int[][] newBoard = board.clone();
+		ArrayList<Block> newBlocks = new ArrayList<Block>();
+		Collections.copy(blocks, newBlocks);
+		HashSet<Coordinates> newOpenSpaces = new HashSet<Coordinates>();
+		for (Coordinates c : openSpaces)
+			newOpenSpaces.add(new Coordinates(c.x, c.y));
+		int newHashCode = hashCode;
+		Block toMove = newBlocks.get(newBoard[x1][y1] - 1);
+		if (x2 - x1 == 1)
+		{
+			for (int i = y1; i <= toMove.y2; i++)
+			{
+				newHashCode -= (x1 + 1) * 7;
+				newHashCode += (toMove.x2 + 2) * 7;
+				newOpenSpaces.add(new Coordinates(x1, i));
+				newOpenSpaces.remove(new Coordinates(toMove.x2 + 1, i));
+				newBoard[x1][i] = 0;
+				newBoard[toMove.x2 + 1][i] = board[x1][y1];
+			}
+		}
+		else if (x1 - x2 == 1)
+		{
+			for (int i = y1; i <= toMove.y2; i++)
+			{
+				newHashCode -= (toMove.x2 + 1) * 7;
+				newHashCode += (x2 + 1) * 7;
+				newOpenSpaces.add(new Coordinates(toMove.x2, i));
+				newOpenSpaces.remove(new Coordinates(x2, i));
+				newBoard[toMove.x2][i] = 0;
+				newBoard[x2][i] = board[x1][y1];
+			}
+		}
+		else if (y2 - y1 == 1)
+		{
+			for (int i = x1; i <= toMove.x2; i++)
+			{
+				newHashCode -= (y1 + 1) * 7;
+				newHashCode += (toMove.y2 + 2) * 7;
+				newOpenSpaces.add(new Coordinates(y1, i));
+				newOpenSpaces.remove(new Coordinates(toMove.y2 + 1, i));
+				newBoard[y1][i] = 0;
+				newBoard[toMove.y2 + 1][i] = board[x1][y1];
+			}
+		}
+		else if (y1 - y2 == 1)
+		{
+			for (int i = x1; i <= toMove.x2; i++)
+			{
+				newHashCode -= (toMove.y2 + 1) * 7;
+				newHashCode += (y2 + 1) * 7;
+				newOpenSpaces.add(new Coordinates(toMove.y2, i));
+				newOpenSpaces.remove(new Coordinates(y2, i));
+				newBoard[toMove.y2][i] = 0;
+				newBoard[y2][i] = board[x1][y1];
+			}
+		}
+		toMove.x2 += (x2 - x1);
+		toMove.y2 += (y2 - y1);
+		toMove.x1 = x2;
+		toMove.y1 = y2;
+		toMove.configuration = toMove.x1 + " " + toMove.y1 + " " + toMove.x2 + " " + toMove.y2;
+		return new Board(newBoard, newBlocks, newHashCode, newOpenSpaces);
 	}
 
 	/**
@@ -218,6 +306,9 @@ public class Board
 	 */
 	public String toString()
 	{
-		return null;
+		String toReturn = board.length + " " + board[0].length + "\n";
+		for (Block b : blocks)
+			toReturn += b.toString() + "\n";
+		return toReturn;
 	}
 }
