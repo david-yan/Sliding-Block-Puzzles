@@ -105,6 +105,5 @@ public class BoardTest
 		}
 		catch (Exception e)
 		{}
-
 	}
 }

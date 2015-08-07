@@ -1,42 +1,53 @@
+import java.io.BufferedReader;
+import java.io.FileReader;
 import java.io.IOException;
 import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Stack;
 
-public class Solver {
-	static final Charset ENCODING = StandardCharsets.UTF_8;
-
+public class Solver
+{
 	/**
 	 * Reads files and constructs Board accordingly. Then solves the puzzle
 	 * 
 	 * @param args
 	 *            [0] Board configuration [1] Goal configuration
 	 */
-	public static void main(String[] args) {
-		Solver s = new Solver();
+	public static void main(String[] args)
+	{
 		Board b;
-		String goal;
-		try {
-			List<String> lines = Files.readAllLines(Paths.get(args[0]),
-					ENCODING);
-			b = new Board(lines.get(0));
-			for (int i = 1; i < lines.size(); i++) {
-				b.addBlock(lines.get(i));
+		LinkedList<String> goals = new LinkedList<String>();
+		try
+		{
+			BufferedReader br = new BufferedReader(new FileReader(args[0]));
+			String line = br.readLine();
+			b = new Board(line);
+			line = br.readLine();
+			while (line != null && !line.equals(""))
+			{
+				b.addBlock(line);
+				line = br.readLine();
 			}
 			b.finishAddingBlocks();
-			lines = Files.readAllLines(Paths.get(args[1]), ENCODING);
-			if (lines.size() != 1) {
-				System.out.println("Invalid init and/or goal file.");
-				return;
+			br = new BufferedReader(new FileReader(args[1]));
+			line = br.readLine();
+			while(line != null && !line.equals(""))
+			{
+				goals.add(line);
+				line = br.readLine();
 			}
-			goal = lines.get(0);
-			s.findPathToGoal(b, goal);
-		} catch (Exception e) {
+			findPathToGoal(b, goals);
+		}
+		catch (Exception e)
+		{
+			e.printStackTrace();
 			System.out.println("Invalid init and/or goal file.");
 		}
 	}
@@ -50,7 +61,8 @@ public class Solver {
 	 * @param goal
 	 *            Goal configuration
 	 */
-	public void findPathToGoal(Board b, String goal) {
+	public static void findPathToGoal(Board b, LinkedList<String> goals)
+	{
 		// to put each Node of board configuration onto the Stack to process
 		// them
 		Stack<Node> fringe = new Stack<Node>();
@@ -69,22 +81,28 @@ public class Solver {
 		// to go backwards and print the path that got to goal
 		Node endResult = null;
 
-		while (!fringe.isEmpty()) {
+		while (!fringe.isEmpty())
+		{
 
 			Node boardToLook = fringe.pop();
-			endResult = boardToLook;
 
 			Board result = boardToLook.myItem.move(boardToLook.move);
-			if (!visited.contains(result)) {
+			if (!visited.contains(result))
+			{
+				LinkedList<String> temp = new LinkedList();
+				temp.addAll(goals);
 				// found the path to goal
-				if (result.checkGoal(goal)) {
+				if (result.checkGoal(temp))
+				{
 					pathNotFound = false;
+					endResult = boardToLook;
 					break;
 				}
 
 				// create new board with the new possibleMoves
-
-				for (String s : result.possibleMoves()) {
+				List<String> possibleMoves = result.possibleMoves();
+				for (String s : possibleMoves)
+				{
 					fringe.push(new Node(result, s, boardToLook));
 				}
 
@@ -93,8 +111,8 @@ public class Solver {
 		}
 
 		// path was not found
-		if (pathNotFound) {
-			System.out.println("print nothing");
+		if (pathNotFound)
+		{
 			return;
 		}
 
@@ -103,13 +121,17 @@ public class Solver {
 		Stack<Node> inorderPath = new Stack<Node>();
 		Node cur = endResult;
 
-		while (cur != null) {
+		while (cur != null)
+		{
 			inorderPath.push(cur);
 			cur = cur.getPrev();
 		}
 
-		while (!inorderPath.isEmpty()) {
-			System.out.println(inorderPath.pop().move);
+		while (!inorderPath.isEmpty())
+		{
+			String move = inorderPath.pop().move;
+			if (!move.equals(""))
+				System.out.println(move);
 		}
 
 	}
@@ -121,32 +143,38 @@ public class Solver {
 	 * @author quangnguyen
 	 *
 	 */
-	private class Node {
-		private Board myItem;
-		private String move;
-		private Node prev;
+	private static class Node
+	{
+		private Board	myItem;
+		private String	move;
+		private Node	prev;
 
-		public Node(Board b, String m, Node p) {
+		public Node(Board b, String m, Node p)
+		{
 			myItem = b;
 			move = m;
 			prev = p;
 		}
 
-		public Node(Board b, String m) {
+		public Node(Board b, String m)
+		{
 			myItem = b;
 			move = m;
 		}
 
-		public Node(Board b) {
+		public Node(Board b)
+		{
 			myItem = b;
 			move = "";
 		}
 
-		public int hashCode() {
+		public int hashCode()
+		{
 			return myItem.hashCode();
 		}
 
-		public Node getPrev() {
+		public Node getPrev()
+		{
 			return prev;
 		}
 	}
