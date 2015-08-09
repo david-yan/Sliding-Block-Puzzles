@@ -86,6 +86,12 @@ public class BoardTest
 			assertTrue(moves.contains("1 1 2 1"));
 			assertTrue(moves.contains("1 3 0 3"));
 			assertTrue(moves.contains("1 3 2 3"));
+			
+			b = new Board("5 4");
+			b.addBlock("0 1 1 2");
+			b.finishAddingBlocks();
+			moves = b.possibleMoves();
+			assertFalse(moves.contains("0 1 0 3"));
 		}
 		catch (Exception e)
 		{}
@@ -101,7 +107,7 @@ public class BoardTest
 			b.finishAddingBlocks();
 			Board b1 = b.move("0 0 1 0");
 			assertEquals(b.toString(), "2 2\n0 0 0 0\n");
-			assertEquals(b1.toString(), "2 2\n1 0 1 0");
+			assertEquals(b1.toString(), "2 2\n1 0 1 0\n");
 		}
 		catch (Exception e)
 		{}

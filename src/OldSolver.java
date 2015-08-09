@@ -1,13 +1,18 @@
 import java.io.BufferedReader;
 import java.io.FileReader;
-import java.util.HashMap;
+import java.io.IOException;
+import java.nio.charset.Charset;
+import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Queue;
 import java.util.Stack;
 
-public class Solver
+public class OldSolver
 {
 	/**
 	 * Reads files and constructs Board accordingly. Then solves the puzzle
@@ -17,13 +22,13 @@ public class Solver
 	 */
 	public static void main(String[] args)
 	{
-		ExperimentalBoard b;
-		HashMap<String, String> goals = new HashMap<String, String>();
+		Board b;
+		LinkedList<String> goals = new LinkedList<String>();
 		try
 		{
 			BufferedReader br = new BufferedReader(new FileReader(args[0]));
 			String line = br.readLine();
-			b = new ExperimentalBoard(line);
+			b = new Board(line);
 			line = br.readLine();
 			while (line != null && !line.equals(""))
 			{
@@ -33,9 +38,9 @@ public class Solver
 			b.finishAddingBlocks();
 			br = new BufferedReader(new FileReader(args[1]));
 			line = br.readLine();
-			while (line != null && !line.equals(""))
+			while(line != null && !line.equals(""))
 			{
-				goals.put(ExperimentalBoard.firstTwoNumbers(line), line);
+				goals.add(line);
 				line = br.readLine();
 			}
 			findPathToGoal(b, goals);
@@ -56,14 +61,14 @@ public class Solver
 	 * @param goal
 	 *            Goal configuration
 	 */
-	public static void findPathToGoal(ExperimentalBoard b, HashMap<String, String> goals)
+	public static void findPathToGoal(Board b, LinkedList<String> goals)
 	{
 		// to put each Node of board configuration onto the Stack to process
 		// them
 		Stack<Node> fringe = new Stack<Node>();
 
 		// to check if Node of board configuration has already been processed
-		HashSet<ExperimentalBoard> visited = new HashSet<ExperimentalBoard>();
+		HashSet<Board> visited = new HashSet<Board>();
 
 		// initial configuration of the board
 		Node firstBoard = new Node(b);
@@ -78,13 +83,16 @@ public class Solver
 
 		while (!fringe.isEmpty())
 		{
+
 			Node boardToLook = fringe.pop();
 
-			ExperimentalBoard result = boardToLook.myItem.move(boardToLook.move);
+			Board result = boardToLook.myItem.move(boardToLook.move);
 			if (!visited.contains(result))
 			{
+				LinkedList<String> temp = new LinkedList();
+				temp.addAll(goals);
 				// found the path to goal
-				if (goals.containsKey(ExperimentalBoard.lastTwoNumbers(boardToLook.move)) && result.checkGoal(goals))
+				if (result.checkGoal(temp))
 				{
 					pathNotFound = false;
 					endResult = boardToLook;
@@ -95,8 +103,7 @@ public class Solver
 				List<String> possibleMoves = result.possibleMoves();
 				for (String s : possibleMoves)
 				{
-					if (boardToLook.move.equals("") || !isReverse(boardToLook.move, s))
-						fringe.push(new Node(result, s, boardToLook));
+					fringe.push(new Node(result, s, boardToLook));
 				}
 
 				visited.add(result);
@@ -128,11 +135,6 @@ public class Solver
 		}
 
 	}
-	
-	public static boolean isReverse(String prev, String curr)
-	{
-		return ExperimentalBoard.firstTwoNumbers(prev).equals(ExperimentalBoard.lastTwoNumbers(curr)) && ExperimentalBoard.firstTwoNumbers(curr).equals(ExperimentalBoard.lastTwoNumbers(prev));
-	}
 
 	/**
 	 * Node that contains the current Board and a pointer to its previous board
@@ -143,24 +145,24 @@ public class Solver
 	 */
 	private static class Node
 	{
-		private ExperimentalBoard	myItem;
-		private String				move;
-		private Node				prev;
+		private Board	myItem;
+		private String	move;
+		private Node	prev;
 
-		public Node(ExperimentalBoard b, String m, Node p)
+		public Node(Board b, String m, Node p)
 		{
 			myItem = b;
 			move = m;
 			prev = p;
 		}
 
-		public Node(ExperimentalBoard b, String m)
+		public Node(Board b, String m)
 		{
 			myItem = b;
 			move = m;
 		}
 
-		public Node(ExperimentalBoard b)
+		public Node(Board b)
 		{
 			myItem = b;
 			move = "";

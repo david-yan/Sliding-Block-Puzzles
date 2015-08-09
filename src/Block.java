@@ -24,7 +24,7 @@ public class Block
 	
 	public int hashCode()
 	{
-		return x1 * 7 + y1 * 13 + x2 * 37 + y2 * 43;
+		return toString().hashCode();
 	}
 	
 	public String toString()
