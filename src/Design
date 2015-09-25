@@ -1,0 +1,21 @@
+Things to do:
+1. Design graph traversal
+  - works the same as the path method in Graph.java in lab21. 
+2. Design implementation of board
+  - thinking possibly using a 2D array like in checkers with an array of all the blocks
+  - each space would store the index of the block that is on it
+  - need to implement a toString method of Board to match that specified in the project description
+  - handles all movement
+    - canMove: has a piece that can move
+    - possibleMoves: list of all possible moves (probably returns the starting position of a piece and the ending position of the piece
+    - move: return the resulting board of moving one piece
+    - equals: for checking repeating configurations
+      - possibly using hashCode to check to keep comparison running as fast as possible
+      - also stores hashCode inside board and updates hashCode with move
+3. Design implementation of block
+  - stores dimensions of block
+  - stores position of this
+  - implements toString to help board.toString
+4. TESTING
+  - TESTING
+    -TESTING
