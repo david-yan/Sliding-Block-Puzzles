@@ -1,7 +1,9 @@
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedList;
+import java.util.Set;
 
 public class ExperimentalBoard
 {
@@ -292,5 +294,13 @@ public class ExperimentalBoard
 	public int hashCode()
 	{
 		return hashCode;
+	}
+	
+	public ArrayList<String> blocks()
+	{
+		ArrayList<String> toRtn = new ArrayList<String>();
+		for (Block b : blocks.values())
+			toRtn.add(b.toString());
+		return toRtn;
 	}
 }

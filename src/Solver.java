@@ -129,6 +129,72 @@ public class Solver
 
 	}
 	
+	public static Stack<Node> solve(ExperimentalBoard b, HashMap<String, String> goals)
+	{
+		// to put each Node of board configuration onto the Stack to process
+				// them
+				Stack<Node> fringe = new Stack<Node>();
+
+				// to check if Node of board configuration has already been processed
+				HashSet<ExperimentalBoard> visited = new HashSet<ExperimentalBoard>();
+
+				// initial configuration of the board
+				Node firstBoard = new Node(b);
+				fringe.push(firstBoard);
+
+				// if path is not found, this stays true
+				boolean pathNotFound = true;
+
+				// node that indicates the end Node of the goal
+				// to go backwards and print the path that got to goal
+				Node endResult = null;
+
+				while (!fringe.isEmpty())
+				{
+					Node boardToLook = fringe.pop();
+
+					ExperimentalBoard result = boardToLook.myItem.move(boardToLook.move);
+					if (!visited.contains(result))
+					{
+						// found the path to goal
+						if (goals.containsKey(ExperimentalBoard.lastTwoNumbers(boardToLook.move)) && result.checkGoal(goals))
+						{
+							pathNotFound = false;
+							endResult = boardToLook;
+							break;
+						}
+
+						// create new board with the new possibleMoves
+						List<String> possibleMoves = result.possibleMoves();
+						for (String s : possibleMoves)
+						{
+							if (boardToLook.move.equals("") || !isReverse(boardToLook.move, s))
+								fringe.push(new Node(result, s, boardToLook));
+						}
+
+						visited.add(result);
+					}
+				}
+
+				// path was not found
+				if (pathNotFound)
+				{
+					return null;
+				}
+
+				// path was found
+				// print out moves that got to goal
+				Stack<Node> inorderPath = new Stack<Node>();
+				Node cur = endResult;
+
+				while (cur != null)
+				{
+					inorderPath.push(cur);
+					cur = cur.getPrev();
+				}
+				return inorderPath;
+	}
+	
 	public static boolean isReverse(String prev, String curr)
 	{
 		return ExperimentalBoard.firstTwoNumbers(prev).equals(ExperimentalBoard.lastTwoNumbers(curr)) && ExperimentalBoard.firstTwoNumbers(curr).equals(ExperimentalBoard.lastTwoNumbers(prev));
@@ -141,9 +207,9 @@ public class Solver
 	 * @author quangnguyen
 	 *
 	 */
-	private static class Node
+	static class Node
 	{
-		private ExperimentalBoard	myItem;
+		ExperimentalBoard	myItem;
 		private String				move;
 		private Node				prev;
 
