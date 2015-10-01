@@ -1,9 +1,15 @@
 import java.util.ArrayList;
+<<<<<<< HEAD
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.Set;
+=======
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.LinkedList;
+>>>>>>> 789ccd4455833326093f9a5274bc59d485ba4338
 
 public class ExperimentalBoard
 {
@@ -12,7 +18,11 @@ public class ExperimentalBoard
 	 */
 	private HashSet<Coordinates>	openSpaces;
 	private HashMap<String, Block>	blocks;
+<<<<<<< HEAD
 	short					x, y;
+=======
+	private short					x, y;
+>>>>>>> 789ccd4455833326093f9a5274bc59d485ba4338
 	private int						hashCode;
 
 	private HashSet<Coordinates>	occupiedSpaces;
@@ -295,6 +305,7 @@ public class ExperimentalBoard
 	{
 		return hashCode;
 	}
+<<<<<<< HEAD
 	
 	public ArrayList<String> blocks()
 	{
@@ -303,4 +314,6 @@ public class ExperimentalBoard
 			toRtn.add(b.toString());
 		return toRtn;
 	}
+=======
+>>>>>>> 789ccd4455833326093f9a5274bc59d485ba4338
 }
