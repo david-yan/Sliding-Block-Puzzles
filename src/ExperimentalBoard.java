@@ -12,7 +12,7 @@ public class ExperimentalBoard
 	 */
 	private HashSet<Coordinates>	openSpaces;
 	private HashMap<String, Block>	blocks;
-	private short					x, y;
+	short					x, y;
 	private int						hashCode;
 
 	private HashSet<Coordinates>	occupiedSpaces;
