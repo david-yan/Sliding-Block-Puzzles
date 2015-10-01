@@ -194,7 +194,7 @@ public class Game
 					if (inSolve(x, y) && !solving)
 					{
 						StdDrawPlus.text(6.5, 1.9, "Solving...");
-						StdDrawPlus.show();
+						StdDrawPlus.show(10);
 						solution = Solver.solve(board, goals);
 						solving = true;
 					}
