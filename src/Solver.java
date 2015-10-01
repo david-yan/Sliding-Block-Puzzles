@@ -129,7 +129,6 @@ public class Solver
 
 	}
 	
-<<<<<<< HEAD
 	public static Stack<Node> solve(ExperimentalBoard b, HashMap<String, String> goals)
 	{
 		// to put each Node of board configuration onto the Stack to process
@@ -195,9 +194,7 @@ public class Solver
 				}
 				return inorderPath;
 	}
-	
-=======
->>>>>>> 789ccd4455833326093f9a5274bc59d485ba4338
+
 	public static boolean isReverse(String prev, String curr)
 	{
 		return ExperimentalBoard.firstTwoNumbers(prev).equals(ExperimentalBoard.lastTwoNumbers(curr)) && ExperimentalBoard.firstTwoNumbers(curr).equals(ExperimentalBoard.lastTwoNumbers(prev));
@@ -210,15 +207,9 @@ public class Solver
 	 * @author quangnguyen
 	 *
 	 */
-<<<<<<< HEAD
 	static class Node
 	{
 		ExperimentalBoard	myItem;
-=======
-	private static class Node
-	{
-		private ExperimentalBoard	myItem;
->>>>>>> 789ccd4455833326093f9a5274bc59d485ba4338
 		private String				move;
 		private Node				prev;
 
