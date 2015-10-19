@@ -177,7 +177,7 @@ public class Game
 					if (solving)
 					{
 						StdDrawPlus.text(6.5, 1.9, "Solving...");
-						StdDrawPlus.show(90);
+						StdDrawPlus.show(10);
 					}
 					StdDrawPlus.show(10);
 					break;
